@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useIsAuthenticated } from "@azure/msal-react";
 import { useMsal } from "@azure/msal-react";
 import { apiRequestHello, loginRequest } from "./config/authConfig";
-import { AuthenticationResult, EndSessionPopupRequest } from "@azure/msal-browser";
+import { EndSessionPopupRequest } from "@azure/msal-browser";
 
 function App() {
   const isAuthenticated = useIsAuthenticated();
@@ -29,7 +29,7 @@ function App() {
         })
         .catch(console.log);
     } else setUserData(undefined);
-  }, [isAuthenticated]);
+  }, [isAuthenticated, accounts, instance]);
 
   const handleCallHelloFunction = async () => {
     const headers = new Headers();
@@ -53,43 +53,45 @@ function App() {
 
   const renderAuth = () => {
     return (
-      <div style={{ margin: "2em" }}>
-        <button
-          onClick={() =>
-            instance.logoutPopup({
-              postLogoutRedirect: "/",
-              mainWindowRedirectUri: "/",
-            } as EndSessionPopupRequest)
-          }
-        >
-          Logout
-        </button>
-        {userData && (
-          <div style={{ marginTop: "2em" }}>
-            <div>Name: {userData.name}</div>
-            <br />
-            <div>Username: {userData.username}</div>
-            <br />
-            <div>Access Token: {userData.accessToken}</div>
-            <br />
-            <div>Expires On: {userData.expiresOn.toString()}</div>
-            <br />
-            <div>Scopes: {userData.scopes.join(", ")}</div>
-            <br />
-            <p>
-              <button onClick={() => handleCallHelloFunction()}>Call Hello Function</button>
-            </p>
-          </div>
-        )}
-      </div>
+      <AuthenticatedTemplate>
+        <div style={{ margin: "2em" }}>
+          <button
+            onClick={() =>
+              instance.logoutPopup({
+                postLogoutRedirect: "/",
+                mainWindowRedirectUri: "/",
+              } as EndSessionPopupRequest)
+            }
+          >
+            Logout
+          </button>
+          {userData && (
+            <div style={{ marginTop: "2em" }}>
+              <div>Name: {userData.name}</div>
+              <br />
+              <div>Username: {userData.username}</div>
+              <br />
+              <div>Access Token: {userData.accessToken}</div>
+              <br />
+              <div>Expires On: {userData.expiresOn.toString()}</div>
+              <br />
+              <div>Scopes: {userData.scopes.join(", ")}</div>
+              <br />
+              <p>
+                <button onClick={() => handleCallHelloFunction()}>Call Hello Function</button>
+              </p>
+            </div>
+          )}
+        </div>
+      </AuthenticatedTemplate>
     );
   };
 
   const renderNotAuth = () => {
     return (
-      <div>
+      <UnauthenticatedTemplate>
         <button onClick={() => instance.loginPopup(loginRequest)}>Login</button>
-      </div>
+      </UnauthenticatedTemplate>
     );
   };
 
