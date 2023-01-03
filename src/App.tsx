@@ -1,7 +1,104 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { AuthenticatedTemplate, UnauthenticatedTemplate, useIsAuthenticated } from "@azure/msal-react";
+import { useMsal } from "@azure/msal-react";
+import { apiRequestHello, loginRequest } from "./config/authConfig";
+import { AuthenticationResult, EndSessionPopupRequest } from "@azure/msal-browser";
 
 function App() {
-  return <h1>Hello Auth-World!</h1>;
+  const isAuthenticated = useIsAuthenticated();
+  const { instance, accounts } = useMsal();
+  const [userData, setUserData] = useState<any>();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      instance
+        .acquireTokenSilent({ ...loginRequest, account: accounts[0] })
+        .then((resp) => {
+          const { account, scopes, expiresOn, accessToken } = resp;
+          const { name, username } = account!;
+
+          instance.setActiveAccount(accounts[0]);
+
+          setUserData({
+            accessToken,
+            expiresOn,
+            name,
+            username,
+            scopes: [...scopes],
+          });
+        })
+        .catch(console.log);
+    } else setUserData(undefined);
+  }, [isAuthenticated]);
+
+  const handleCallHelloFunction = async () => {
+    const headers = new Headers();
+    const bearer = `Bearer ${userData.accessToken}`;
+
+    headers.append("Authorization", bearer);
+
+    try {
+      const resp = await fetch(apiRequestHello.url, {
+        method: "GET",
+        headers,
+      });
+
+      const json = await resp.json();
+
+      console.log("Hello Api response : ", json);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const renderAuth = () => {
+    return (
+      <div style={{ margin: "2em" }}>
+        <button
+          onClick={() =>
+            instance.logoutPopup({
+              postLogoutRedirect: "/",
+              mainWindowRedirectUri: "/",
+            } as EndSessionPopupRequest)
+          }
+        >
+          Logout
+        </button>
+        {userData && (
+          <div style={{ marginTop: "2em" }}>
+            <div>Name: {userData.name}</div>
+            <br />
+            <div>Username: {userData.username}</div>
+            <br />
+            <div>Access Token: {userData.accessToken}</div>
+            <br />
+            <div>Expires On: {userData.expiresOn.toString()}</div>
+            <br />
+            <div>Scopes: {userData.scopes.join(", ")}</div>
+            <br />
+            <p>
+              <button onClick={() => handleCallHelloFunction()}>Call Hello Function</button>
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderNotAuth = () => {
+    return (
+      <div>
+        <button onClick={() => instance.loginPopup(loginRequest)}>Login</button>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <p>0.0.1</p>
+      {isAuthenticated ? renderAuth() : renderNotAuth()}
+    </div>
+  );
 }
 
 export default App;
