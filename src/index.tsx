@@ -5,6 +5,8 @@ import { MsalProvider } from "@azure/msal-react";
 import { msalConfig } from "./config/authConfig";
 import App from "./App";
 
+msalConfig.auth.redirectUri = window.location.href;
+
 const msalInstance = new PublicClientApplication(msalConfig);
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(

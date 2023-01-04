@@ -2,8 +2,8 @@ export const msalConfig = {
   auth: {
     clientId: "8006c866-1a41-432a-8d1f-690b7924b126",
     authority: "https://login.microsoftonline.com/35bd1325-af2b-43f0-a106-3efdcfed0b07",
-    //redirectUri: "https://witty-sand-0686f5710.2.azurestaticapps.net/",
-    redirectUri: "http://localhost:3000",
+    redirectUri: "https://witty-sand-0686f5710.2.azurestaticapps.net/",
+    //redirectUri: "http://localhost:3000",
   },
   cache: {
     cacheLocation: "sessionStorage",
