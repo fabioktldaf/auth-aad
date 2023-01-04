@@ -1,3 +1,5 @@
+import { env } from "process";
+
 export const msalConfig = {
   auth: {
     clientId: "8006c866-1a41-432a-8d1f-690b7924b126",
@@ -23,9 +25,14 @@ export const loginRequest = {
   ],
 };
 
-export const apiRequestHello = {
-  url: "https://hello-auth-world.azurewebsites.net/api/Hello",
+export const apiRequestGetAllUsers = {
+  url: "https://hello-auth-world.azurewebsites.net/api/GetAllUsers??code=ovIfMxPE7VjiJSGhcx3Hu_yGa8VgrlkCyTkgiPCiBxuiAzFuZeNIRg==",
+  //url: "https://hello-auth-world.azurewebsites.net/api/Hello",
   scopes: ["api://8006c866-1a41-432a-8d1f-690b7924b126/user_impersonation"],
+};
+
+export const graphConfig = {
+  graphMeEndpoint: "https://graph.microsoft.com/v1.0/me",
 };
 
 /*
