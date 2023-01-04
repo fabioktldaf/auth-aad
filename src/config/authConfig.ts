@@ -1,5 +1,3 @@
-import { env } from "process";
-
 export const msalConfig = {
   auth: {
     clientId: "8006c866-1a41-432a-8d1f-690b7924b126",
